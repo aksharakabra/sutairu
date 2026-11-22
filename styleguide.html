@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sutairu style guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sutairu.css">
+<style>.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}.sw div{border-radius:10px;padding:34px 8px 8px;font-size:.78rem;border:1px solid var(--line)}.demo{display:grid;gap:14px;margin-top:14px}</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav"><a class="logo" href="index.html">Sutairu</a><span class="hand">style guide</span></nav>
+  <section class="section"><h2>Colours</h2>
+    <div class="sw" style="margin-top:14px">
+      <div style="background:#F3EBDD">Cream<br>#F3EBDD</div><div style="background:#FBF6EA">Ivory<br>#FBF6EA</div><div style="background:#F2D5D0">Petal<br>#F2D5D0</div><div style="background:#E8B9B5">Blush<br>#E8B9B5</div><div style="background:#C98A8A">Rosewood<br>#C98A8A</div>
+      <div style="background:#7E0A21;color:#FBF6EA">Velvet<br>#7E0A21</div><div style="background:#A67C52;color:#FBF6EA">Caramel<br>#A67C52</div><div style="background:#E7DECD">Tissue<br>#E7DECD</div><div style="background:#8FA68A">Sage<br>#8FA68A</div><div style="background:#3B2428;color:#FBF6EA">Ink<br>#3B2428</div>
+    </div></section>
+  <section class="section"><h2>Type</h2>
+    <div class="demo"><h1>Fraunces italic for the logo and big titles</h1><h2>Fraunces for headings</h2><p>Nunito for reading text, buttons and navigation. Clean and rounded.</p><p class="hand">Caveat for notes and tags, never long paragraphs.</p></div></section>
+  <section class="section"><h2>Buttons and chips</h2>
+    <div class="demo"><div class="row"><button class="btn">Step inside</button><button class="btn btn--ghost">How it works</button></div>
+    <div class="chips"><button class="chip" aria-pressed="true">Winter coats</button><button class="chip" aria-pressed="false">Summer linen</button><button class="chip" aria-pressed="false">Dark academia</button></div></div></section>
+  <section class="section"><h2>Hang tag, stitched card, field</h2>
+    <div class="demo"><div class="tag" style="max-width:240px;margin:0"><h3>Library date</h3><span class="hand">cozy</span><button class="hold" aria-pressed="false">Put it on hold</button></div>
+    <div class="stitch" style="max-width:360px"><h3>Your closet is empty</h3><p>Go browse, I’ll hold the door.</p></div>
+    <input class="field" style="max-width:360px" placeholder="Ask the stylist: burgundy, under 1000" aria-label="Search"></div></section>
+  <footer class="foot"><p class="hand">Change colours in sutairu.css only.</p></footer>
+</div>
+</body>
+</html>

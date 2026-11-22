@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The shop floor | Sutairu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sutairu.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="index.html">Sutairu</a>
+    <div class="links"><a href="shop.html" aria-current="page" style="color:var(--accent)">Shop floor</a><a href="index.html#fitting">Fitting room</a><a href="index.html#fitting">Wardrobe</a></div>
+    <span class="pill" id="holds" aria-live="polite">♡ 0 on hold</span>
+    <button class="icon-btn" id="theme" aria-label="Switch between day and evening shop">☾</button>
+  </nav>
+
+  <main>
+    <header class="section" style="padding-top:20px">
+      <h1>The shop floor</h1>
+      <p class="hand">Every look is on a hanger. Tap one to see it up close.</p>
+      <div class="bar" role="group" aria-label="Racks">
+        <div class="chips">
+          <button class="chip" aria-pressed="true" data-rack="All">All</button>
+          <button class="chip" aria-pressed="false" data-rack="Winter">Winter</button>
+          <button class="chip" aria-pressed="false" data-rack="Summer">Summer</button>
+          <button class="chip" aria-pressed="false" data-rack="Dark Academia">Dark academia</button>
+          <button class="chip" aria-pressed="false" data-rack="Meesho Finds">Meesho finds</button>
+        </div>
+      </div>
+      <div class="bar">
+        <select class="field" id="mood" aria-label="Mood"><option value="">Any mood</option></select>
+        <select class="field" id="who" aria-label="Styled for"><option value="">Styled for everyone</option><option value="women">Styled for women</option><option value="men">Styled for men</option></select>
+        <button class="chip" id="clean" aria-pressed="false">Hide screenshots</button>
+        <span class="count" id="count" aria-live="polite"></span>
+      </div>
+    </header>
+
+    <div class="feed" id="feed"></div>
+    <div class="stitch" id="empty" hidden style="margin-top:26px;max-width:420px"><h3>This rack is empty</h3><p>Nothing matches yet. Try another mood or rack, and I’ll keep looking.</p></div>
+  </main>
+
+  <footer class="foot">
+    <p class="logo" style="margin:0">Sutairu</p>
+    <p class="hand">Your closet, but dreamier.</p>
+    <p style="font-size:.8rem;color:var(--muted)">A student portfolio project. Photos are placeholders from Pinterest and will be replaced before launch.</p>
+  </footer>
+</div>
+<dialog class="modal" id="dlg" aria-labelledby="dt"></dialog>
+<script src="catalog.js"></script>
+<script src="shop.js"></script>
+</body>
+</html>

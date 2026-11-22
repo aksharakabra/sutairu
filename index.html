@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sutairu: your closet, but dreamier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sutairu.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="index.html">Sutairu</a>
+    <div class="links"><a href="shop.html">Shop floor</a><a href="#fitting">Fitting room</a><a href="#fitting">Wardrobe</a></div>
+    <button class="icon-btn" id="theme" aria-label="Switch between day and evening shop">☾</button>
+    <a class="btn" href="#fitting">Join</a>
+  </nav>
+
+  <header>
+    <div class="awning" aria-hidden="true"></div>
+    <div class="window">
+      <div class="lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="sign">Open</div>
+      <svg viewBox="0 0 420 210" role="img" aria-label="Three mannequins wearing a burgundy dress, a cream coat and a sage dress">
+        <g stroke="#A67C52" stroke-width="2"><line x1="90" y1="150" x2="90" y2="188"/><line x1="210" y1="150" x2="210" y2="188"/><line x1="330" y1="150" x2="330" y2="188"/></g>
+        <g fill="#A67C52"><ellipse cx="90" cy="192" rx="26" ry="5"/><ellipse cx="210" cy="192" rx="26" ry="5"/><ellipse cx="330" cy="192" rx="26" ry="5"/></g>
+        <g fill="#F3EBDD"><circle cx="90" cy="46" r="13"/><circle cx="210" cy="46" r="13"/><circle cx="330" cy="46" r="13"/></g>
+        <path d="M70 64h40l16 88H54z" fill="#7E0A21"/>
+        <path d="M186 64h48l10 92h-68z" fill="#E7DECD"/><rect x="181" y="100" width="58" height="6" fill="#7E0A21"/>
+        <path d="M310 64h40l18 88h-76z" fill="#8FA68A"/>
+      </svg>
+    </div>
+    <div class="intro">
+      <h1>Your closet, but dreamier.</h1>
+      <p>Walk the racks, put your favourite looks on hold, and try them together in the fitting room.</p>
+      <div class="row"><a class="btn" href="shop.html">Step inside</a><a class="btn btn--ghost" href="#fitting">How it works</a></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" id="shop" aria-labelledby="new-h">
+      <h2 id="new-h">New on the rail</h2>
+      <p class="hand">Hang around, everything here is waiting for you.</p>
+      <div class="chips" role="group" aria-label="Filter by season" style="margin-top:14px">
+        <button class="chip" aria-pressed="true" data-f="all">All</button>
+        <button class="chip" aria-pressed="false" data-f="winter">Winter</button>
+        <button class="chip" aria-pressed="false" data-f="autumn">Autumn</button>
+        <button class="chip" aria-pressed="false" data-f="summer">Summer</button>
+      </div>
+      <div class="rail"></div>
+      <div class="shelf" id="shelf">
+        <article class="look" data-s="autumn"><svg class="hanger" viewBox="0 0 56 30" aria-hidden="true"><path d="M28 2a4 4 0 1 1 4 4l-4 4L2 28h52L28 10" fill="none" stroke="#A67C52" stroke-width="2.5" stroke-linejoin="round"/></svg>
+          <figure><img src="images/thumb/da25.webp" alt="Oversized chocolate-brown blazer over a white shirt with brown trousers" loading="lazy"></figure>
+          <div class="tag"><h3>Chocolate blazer</h3><span class="hand">elegant</span><button class="hold" aria-pressed="false">Put it on hold</button></div></article>
+        <article class="look" data-s="winter"><svg class="hanger" viewBox="0 0 56 30" aria-hidden="true"><path d="M28 2a4 4 0 1 1 4 4l-4 4L2 28h52L28 10" fill="none" stroke="#A67C52" stroke-width="2.5" stroke-linejoin="round"/></svg>
+          <figure><img src="images/thumb/w07.webp" alt="Camel coat with brown trousers and a small crossbody bag" loading="lazy"></figure>
+          <div class="tag"><h3>Camel coat, brown trousers</h3><span class="hand">elegant</span><button class="hold" aria-pressed="false">Put it on hold</button></div></article>
+        <article class="look" data-s="summer"><svg class="hanger" viewBox="0 0 56 30" aria-hidden="true"><path d="M28 2a4 4 0 1 1 4 4l-4 4L2 28h52L28 10" fill="none" stroke="#A67C52" stroke-width="2.5" stroke-linejoin="round"/></svg>
+          <figure><img src="images/thumb/s18.webp" alt="Crisp white shirt with cream shorts, relaxed summer look" loading="lazy"></figure>
+          <div class="tag"><h3>Crisp white shirt</h3><span class="hand">elegant</span><button class="hold" aria-pressed="false">Put it on hold</button></div></article>
+        <article class="look" data-s="winter"><svg class="hanger" viewBox="0 0 56 30" aria-hidden="true"><path d="M28 2a4 4 0 1 1 4 4l-4 4L2 28h52L28 10" fill="none" stroke="#A67C52" stroke-width="2.5" stroke-linejoin="round"/></svg>
+          <figure><img src="images/thumb/w15.webp" alt="Cozy knit sweater with straight jeans and a scarf" loading="lazy"></figure>
+          <div class="tag"><h3>Cozy knit, straight jeans</h3><span class="hand">cozy</span><button class="hold" aria-pressed="false">Put it on hold</button></div></article>
+      </div>
+    </section>
+
+    <section class="section" id="fitting" aria-labelledby="how-h">
+      <h2 id="how-h">How the shop works</h2>
+      <div class="grid3">
+        <div class="stitch"><h3>Browse the racks</h3><p>Winter coats, summer linen, dark academia and more, all hung by mood.</p></div>
+        <div class="stitch"><h3>Put it on hold</h3><p>Save any look to a closet of your own. We’ll keep it by the window.</p></div>
+        <div class="stitch"><h3>Try it on</h3><p>Mix your saved pieces in the fitting room and share the look.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p class="logo" style="margin:0">Sutairu</p>
+    <p class="hand">Your closet, but dreamier.</p>
+    <p style="font-size:.8rem;color:var(--muted)">A student portfolio project. Photos are placeholders from Pinterest and will be replaced before launch.</p>
+  </footer>
+</div>
+<script>
+var root=document.documentElement,tb=document.getElementById('theme');
+try{var t=localStorage.getItem('sutairu-theme');if(t)root.setAttribute('data-theme',t)}catch(e){}
+tb.onclick=function(){var dark=getComputedStyle(root).getPropertyValue('--bg').trim()==='#2A1418';var n=dark?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('sutairu-theme',n)}catch(e){}};
+document.querySelectorAll('.chip').forEach(function(c){c.onclick=function(){document.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed',x===c)});var f=c.dataset.f;document.querySelectorAll('.look').forEach(function(l){l.hidden=f!=='all'&&l.dataset.s!==f})}});
+document.querySelectorAll('.hold').forEach(function(b){b.onclick=function(){var on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);b.textContent=on?'On hold for you':'Put it on hold'}});
+</script>
+</body>
+</html>
