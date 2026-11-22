@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Your wardrobe | Sutairu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sutairu.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="index.html">Sutairu</a>
+    <div class="links"><a href="shop.html">Shop floor</a><a href="index.html#fitting">Fitting room</a><a href="wardrobe.html" aria-current="page" style="color:var(--accent)">Wardrobe</a></div>
+    <button class="icon-btn" id="theme" aria-label="Switch between day and evening shop">☾</button>
+  </nav>
+  <main class="section" style="padding-top:20px">
+    <div class="stitch" id="guest" hidden style="max-width:420px"><h2>Your wardrobe is locked</h2><p>Open a membership to keep closets of your favourite looks.</p><p style="margin-top:14px"><a class="btn" href="join.html">Open a membership</a></p></div>
+    <div id="me" hidden style="display:none;gap:24px">
+      <h1>Your wardrobe</h1>
+      <div class="mcard"><i></i><p class="hand">Sutairu member</p><h2 id="mname"></h2><p id="memail"></p><p id="msince"></p></div>
+      <p class="hand" id="stats"></p>
+      <p class="hand" id="demo" hidden>Demo mode: saved in this browser only. Add your Supabase keys to config.js for real accounts.</p>
+      <form id="newc" class="row"><input class="field" id="cn" style="max-width:260px" maxlength="40" placeholder="Name a new closet" aria-label="New closet name" required><button class="btn" type="submit">Add closet</button></form>
+      <div class="closet-grid" id="closets"></div>
+      <div class="row"><a class="btn" href="shop.html">Back to the shop floor</a><button class="btn btn--ghost" id="out">Log out</button></div>
+    </div>
+  </main>
+</div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="store.js"></script>
+<script src="catalog.js"></script>
+<script>
+var $ = function (s) { return document.querySelector(s); }, byId = {}, U = null;
+CATALOG.forEach(function (c) { byId[c.id] = c; });
+if (Store.mode === 'demo') $('#demo').hidden = false;
+async function draw() {
+  var cl = await Store.closets(), hs = await Store.holds(), seen = {};
+  hs.forEach(function (h) { seen[h.look_id] = 1; });
+  var n = Object.keys(seen).length;
+  $('#stats').textContent = n ? n + (n === 1 ? ' look' : ' looks') + ' on hold across ' + cl.length + (cl.length === 1 ? ' closet' : ' closets') : 'Nothing on hold yet. Go browse, I’ll hold the door.';
+  $('#closets').innerHTML = cl.map(function (c) {
+    var mine = hs.filter(function (h) { return h.closet_id === c.id; });
+    var th = mine.map(function (h) {
+      var l = byId[h.look_id]; if (!l) return '';
+      return '<div class="th"><img src="images/' + l.thumb + '" alt="' + l.title + '" title="' + l.title + '" loading="lazy"><button data-rm="' + c.id + '|' + h.look_id + '" aria-label="Remove ' + l.title + '">×</button></div>';
+    }).join('');
+    return '<section class="stitch"><h3>' + Store.esc(c.name) + '</h3><p class="hand">' + mine.length + ' on hold</p>' +
+      (th ? '<div class="thumbs">' + th + '</div>' : '<p style="margin:10px 0">This closet is feeling empty.</p>') +
+      (c.name !== Store.DEF ? '<button class="btn btn--ghost" data-del="' + c.id + '">Delete closet</button>' : '') + '</section>';
+  }).join('');
+}
+Store.user().then(function (u) {
+  if (!u) { $('#guest').hidden = false; return; }
+  U = u; $('#me').hidden = false; $('#me').style.display = 'grid';
+  $('#mname').textContent = u.name; $('#memail').textContent = u.email;
+  $('#msince').textContent = 'Member since ' + new Date(u.since).getFullYear();
+  return draw();
+}).catch(function (e) { console.error(e); $('#stats').textContent = 'Tangled thread. Refresh to try again?'; });
+document.addEventListener('click', async function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  try {
+    if (b.dataset.rm) { var p = b.dataset.rm.split('|'); await Store.unhold(p[0], p[1]); await draw(); }
+    else if (b.dataset.del && confirm('Delete this closet and everything in it?')) { await Store.deleteCloset(b.dataset.del); await draw(); }
+    else if (b.id === 'out') { await Store.signOut(); location.href = 'index.html'; }
+  } catch (err) { alert('Tangled thread. Try again?'); }
+});
+$('#newc').onsubmit = async function (e) {
+  e.preventDefault(); var v = $('#cn').value.trim(); if (!v) return;
+  try { await Store.createCloset(v); $('#cn').value = ''; await draw(); } catch (err) { alert('Tangled thread. Try again?'); }
+};
+</script>
+</body>
+</html>

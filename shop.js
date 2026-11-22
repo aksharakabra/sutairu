@@ -11,10 +11,12 @@
   // Holds are saved in this browser. Cluster 4 moves them to real accounts.
   var holds = [];
   try { holds = JSON.parse(localStorage.getItem('sutairu-holds') || '[]'); } catch (e) {}
+  var user = null, closets = [], target = null, all = [];
   var st = { rack: 'All', mood: '', who: '', clean: false }, cur = [], idx = 0;
 
   function save() { try { localStorage.setItem('sutairu-holds', JSON.stringify(holds)); } catch (e) {} }
-  function has(id) { return holds.indexOf(id) > -1; }
+  function has(id) { return user ? all.some(function (x) { return x.closet_id === target && x.look_id === id; }) : holds.indexOf(id) > -1; }
+  function count() { if (!user) return holds.length; var s = {}; all.forEach(function (x) { s[x.look_id] = 1; }); return Object.keys(s).length; }
   function src(c, k) { return IM[c.id] || 'images/' + c[k]; }
   function alt(c) { return c.title + ', ' + c.tags.slice(0, 3).join(', '); }
   function label(on) { return on ? 'On hold for you' : 'Put it on hold'; }
@@ -40,12 +42,20 @@
   }
 
   function ui() {
-    $('#holds').textContent = '♡ ' + holds.length + ' on hold';
+    $('#holds').textContent = '♡ ' + count() + ' on hold';
     document.querySelectorAll('[data-hold]').forEach(function (b) {
       var on = has(b.dataset.hold); b.setAttribute('aria-pressed', on); b.textContent = label(on);
     });
   }
-  function toggle(id) { var k = holds.indexOf(id); if (k > -1) holds.splice(k, 1); else holds.push(id); save(); ui(); }
+  async function toggle(id) {
+    try {
+      if (user) {
+        if (has(id)) { await Store.unhold(target, id); all = all.filter(function (x) { return !(x.closet_id === target && x.look_id === id); }); }
+        else { await Store.hold(target, id); all.push({ closet_id: target, look_id: id }); }
+      } else { var k = holds.indexOf(id); if (k > -1) holds.splice(k, 1); else holds.push(id); save(); }
+    } catch (e) { alert('Tangled thread. That didn’t save, try again?'); }
+    ui();
+  }
 
   var dlg = $('#dlg');
   function show(i) {
@@ -94,12 +104,25 @@
   $('#mood').onchange = function () { st.mood = this.value; render(); };
   $('#who').onchange = function () { st.who = this.value; render(); };
 
-  var root = document.documentElement;
-  try { var th = localStorage.getItem('sutairu-theme'); if (th) root.setAttribute('data-theme', th); } catch (e) {}
-  $('#theme').onclick = function () {
-    var n = getComputedStyle(root).getPropertyValue('--bg').trim() === '#2A1418' ? 'light' : 'dark';
-    root.setAttribute('data-theme', n); try { localStorage.setItem('sutairu-theme', n); } catch (e) {}
+  function pick() {
+    $('#cl').hidden = false;
+    $('#closet').innerHTML = closets.map(function (c) { return '<option value="' + c.id + '"' + (c.id === target ? ' selected' : '') + '>' + Store.esc(c.name) + '</option>'; }).join('') + '<option value="__new">＋ New closet…</option>';
+  }
+  $('#closet').onchange = async function () {
+    if (this.value === '__new') {
+      var n = (prompt('Name your new closet') || '').trim();
+      if (n) { var c = await Store.createCloset(n); closets.push(c); target = c.id; }
+      pick();
+    } else target = this.value;
+    render(); ui();
   };
 
   render(); ui();
+  Store.user().then(function (u) {
+    if (!u) return;
+    user = u; var me = $('#me'); me.textContent = 'Wardrobe'; me.href = 'wardrobe.html';
+    return Promise.all([Store.closets(), Store.holds()]).then(function (r) {
+      closets = r[0]; all = r[1]; target = closets[0].id; pick(); render(); ui();
+    });
+  }).catch(function (e) { console.error(e); });
 })();

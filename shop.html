@@ -12,9 +12,10 @@
 <div class="wrap">
   <nav class="nav" aria-label="Main">
     <a class="logo" href="index.html">Sutairu</a>
-    <div class="links"><a href="shop.html" aria-current="page" style="color:var(--accent)">Shop floor</a><a href="index.html#fitting">Fitting room</a><a href="index.html#fitting">Wardrobe</a></div>
+    <div class="links"><a href="shop.html" aria-current="page" style="color:var(--accent)">Shop floor</a><a href="index.html#fitting">Fitting room</a><a href="wardrobe.html">Wardrobe</a></div>
     <span class="pill" id="holds" aria-live="polite">♡ 0 on hold</span>
     <button class="icon-btn" id="theme" aria-label="Switch between day and evening shop">☾</button>
+    <a class="btn" id="me" href="join.html">Join</a>
   </nav>
 
   <main>
@@ -34,6 +35,7 @@
         <select class="field" id="mood" aria-label="Mood"><option value="">Any mood</option></select>
         <select class="field" id="who" aria-label="Styled for"><option value="">Styled for everyone</option><option value="women">Styled for women</option><option value="men">Styled for men</option></select>
         <button class="chip" id="clean" aria-pressed="false">Hide screenshots</button>
+        <label class="hand" id="cl" hidden>Saving to <select class="field" id="closet"></select></label>
         <span class="count" id="count" aria-live="polite"></span>
       </div>
     </header>
@@ -49,6 +51,9 @@
   </footer>
 </div>
 <dialog class="modal" id="dlg" aria-labelledby="dt"></dialog>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="store.js"></script>
 <script src="catalog.js"></script>
 <script src="shop.js"></script>
 </body>

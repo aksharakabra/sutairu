@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Open a membership | Sutairu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sutairu.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="index.html">Sutairu</a>
+    <div class="links"><a href="shop.html">Shop floor</a><a href="index.html#fitting">Fitting room</a><a href="wardrobe.html">Wardrobe</a></div>
+    <button class="icon-btn" id="theme" aria-label="Switch between day and evening shop">☾</button>
+  </nav>
+  <main class="section" style="padding-top:20px;display:grid;gap:22px;justify-items:start">
+    <h1>Open a membership</h1>
+    <div class="mcard" aria-hidden="true"><i></i><p class="hand">Sutairu member</p><h2 id="cname">Your name</h2><p>Your closet, but dreamier.</p></div>
+    <div class="chips" role="group" aria-label="Sign up or log in">
+      <button class="chip" id="t-up" aria-pressed="true">Open a membership</button>
+      <button class="chip" id="t-in" aria-pressed="false">Welcome back</button>
+    </div>
+    <form id="f" class="form stitch">
+      <label id="nm">Your name<input class="field" id="name" autocomplete="name" maxlength="40" required></label>
+      <label>Email<input class="field" id="email" type="email" autocomplete="email" required></label>
+      <label>Password<input class="field" id="pw" type="password" minlength="6" autocomplete="current-password" required></label>
+      <button class="btn" id="go" type="submit">Open my membership</button>
+      <p class="hand" id="msg" role="status" aria-live="polite"></p>
+    </form>
+    <p class="hand" id="demo" hidden>Demo mode: your membership lives in this browser only. Add your Supabase keys to config.js for real accounts.</p>
+  </main>
+</div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="store.js"></script>
+<script>
+var $ = function (s) { return document.querySelector(s); }, up = true;
+if (Store.mode === 'demo') $('#demo').hidden = false;
+Store.user().then(function (u) { if (u) location.replace('wardrobe.html'); });
+function mode(isUp) {
+  up = isUp; $('#nm').hidden = !isUp; $('#name').required = isUp;
+  $('#t-up').setAttribute('aria-pressed', isUp); $('#t-in').setAttribute('aria-pressed', !isUp);
+  $('#go').textContent = isUp ? 'Open my membership' : 'Welcome back';
+  $('#pw').autocomplete = isUp ? 'new-password' : 'current-password'; $('#msg').textContent = '';
+}
+$('#t-up').onclick = function () { mode(true); };
+$('#t-in').onclick = function () { mode(false); };
+$('#name').oninput = function () { $('#cname').textContent = this.value.trim() || 'Your name'; };
+$('#f').onsubmit = async function (e) {
+  e.preventDefault(); var go = $('#go'), msg = $('#msg'); go.disabled = true; msg.textContent = 'One moment…';
+  try {
+    var email = $('#email').value.trim(), pw = $('#pw').value;
+    if (up) {
+      var r = await Store.signUp($('#name').value.trim(), email, pw);
+      if (r.needsConfirm) { msg.textContent = 'Almost there. Check your email to confirm, then come back and log in.'; return; }
+    } else await Store.signIn(email, pw);
+    await Store.migrate();
+    location.href = 'wardrobe.html';
+  } catch (err) { msg.textContent = (err && err.message) || 'Tangled thread. Try again?'; }
+  finally { go.disabled = false; }
+};
+</script>
+</body>
+</html>
