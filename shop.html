@@ -22,6 +22,8 @@
     <header class="section" style="padding-top:20px">
       <h1>The shop floor</h1>
       <p class="hand">Every look is on a hanger. Tap one to see it up close.</p>
+      <div class="bar"><input class="field search" id="q" type="search" placeholder="Ask the stylist: burgundy, cozy, wide trousers…" aria-label="Ask the stylist" autocomplete="off"></div>
+      <div class="chips" style="margin-top:8px"><span class="hand">Try</span><button class="chip chip--sm" data-q="burgundy">burgundy</button><button class="chip chip--sm" data-q="cozy">cozy</button><button class="chip chip--sm" data-q="wide trousers">wide trousers</button><button class="chip chip--sm" data-q="blazer">blazer</button><button class="chip chip--sm" data-q="street">street</button></div>
       <div class="bar" role="group" aria-label="Racks">
         <div class="chips">
           <button class="chip" aria-pressed="true" data-rack="All">All</button>
@@ -32,8 +34,10 @@
         </div>
       </div>
       <div class="bar">
+        <span class="swatches" id="dots" role="group" aria-label="Colour"></span>
         <select class="field" id="mood" aria-label="Mood"><option value="">Any mood</option></select>
         <select class="field" id="who" aria-label="Styled for"><option value="">Styled for everyone</option><option value="women">Styled for women</option><option value="men">Styled for men</option></select>
+        <select class="field" id="bud" aria-label="Budget" hidden><option value="">Any budget</option></select>
         <button class="chip" id="clean" aria-pressed="false">Hide screenshots</button>
         <label class="hand" id="cl" hidden>Saving to <select class="field" id="closet"></select></label>
         <span class="count" id="count" aria-live="polite"></span>
@@ -41,7 +45,7 @@
     </header>
 
     <div class="feed" id="feed"></div>
-    <div class="stitch" id="empty" hidden style="margin-top:26px;max-width:420px"><h3>This rack is empty</h3><p>Nothing matches yet. Try another mood or rack, and I’ll keep looking.</p></div>
+    <div class="stitch" id="empty" hidden style="margin-top:26px;max-width:420px"><h3>This rack is empty</h3><p>Nothing matches yet. Try fewer words, another mood or another rack.</p><p style="margin-top:12px"><button class="btn btn--ghost" id="reset">Clear filters</button></p></div>
   </main>
 
   <footer class="foot">
@@ -55,6 +59,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="store.js"></script>
 <script src="catalog.js"></script>
+<script src="products.js"></script>
 <script src="shop.js"></script>
 </body>
 </html>

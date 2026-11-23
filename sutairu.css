@@ -113,3 +113,16 @@ p{margin:0}a{color:var(--accent)}
 .th{position:relative}
 .th img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:4px}
 .th button{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;border:0;background:#7E0A21;color:#FBF6EA;font-size:.9rem;line-height:1;cursor:pointer}
+/* search and shopping */
+.search{max-width:520px;font-size:1.05rem;padding:12px 18px;border-radius:999px}
+.chip--sm{font-size:.78rem;padding:3px 12px}
+a.chip{display:inline-block;text-decoration:none}
+.swatches{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.dot{width:26px;height:26px;padding:0;border-radius:50%;border:1.5px solid var(--caramel);cursor:pointer}
+.dot[aria-pressed="true"]{outline:3px solid var(--accent);outline-offset:2px}
+.dot:focus-visible{outline:3px solid var(--blush);outline-offset:2px}
+.shopbox{display:grid;gap:6px}
+.shopbox summary{list-style:none;cursor:pointer;justify-self:start}
+.shopbox summary::-webkit-details-marker{display:none}
+.piece{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 12px;padding:8px 0;border-bottom:1px dashed var(--line);color:var(--text);text-decoration:none}
+.fine{font-size:.78rem;color:var(--muted)}
