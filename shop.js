@@ -110,7 +110,7 @@
       '<div class="row" style="align-items:center"><span class="hand">Colours</span><span class="dots">' + dots + '</span></div>' +
       (BUD[c.id] ? '<p class="hand">Budget: ' + Store.esc(BUD[c.id]) + '</p>' : '') + (c.sourceType === 'Screenshot' ? '<p class="hand">This is a screenshot of someone else’s post. It’s a placeholder until it’s replaced.</p>' : '') +
       '<div class="row"><button class="btn" data-hold="' + c.id + '" aria-pressed="' + on + '">' + label(on) + '</button>' +
-      '<button class="btn btn--ghost" disabled title="Coming soon">Fitting room</button></div>' + shopBox(c) +
+      '<a class="btn btn--ghost" href="fitting-room.html?add=' + c.id + '">Try in the fitting room</a></div>' + shopBox(c) +
       (more.length ? '<div><p class="hand">More from this rack</p><div class="more">' + more.map(function (x) { return '<button data-go="' + x.id + '" aria-label="' + x.title + '"><img src="' + src(x, 'thumb') + '" alt=""></button>'; }).join('') + '</div></div>' : '') +
       '<div class="row"><button class="btn btn--ghost" data-step="-1">‹ Previous</button><button class="btn btn--ghost" data-step="1">Next ›</button></div></div></div>';
     if (!dlg.open) dlg.showModal();

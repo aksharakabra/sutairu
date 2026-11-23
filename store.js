@@ -68,6 +68,27 @@
     if (!live) { var d = demo(); d.holds = d.holds.filter(function (h) { return !(h.closet_id === closetId && h.look_id === lookId); }); W('sutairu-demo-data', d); return; }
     ck(await sb.from('holds').delete().eq('closet_id', closetId).eq('look_id', lookId));
   };
+  S.outfits = async function () {
+    if (!live) return demo().outfits || [];
+    return ck(await sb.from('outfits').select('id,name,items,updated_at').order('updated_at', { ascending: false }));
+  };
+  S.saveOutfit = async function (name, items, id) {
+    var now = new Date().toISOString();
+    if (!live) {
+      var d = demo(), o = null; d.outfits = d.outfits || [];
+      if (id) o = d.outfits.filter(function (x) { return x.id === id; })[0] || null;
+      if (o) { o.name = name; o.items = items; o.updated_at = now; }
+      else { o = { id: rid(), name: name, items: items, updated_at: now }; d.outfits.unshift(o); }
+      W('sutairu-demo-data', d); return o;
+    }
+    var row = { name: name, items: items, updated_at: now };
+    if (id) return ck(await sb.from('outfits').update(row).eq('id', id).select('id,name,items').single());
+    return ck(await sb.from('outfits').insert(row).select('id,name,items').single());
+  };
+  S.deleteOutfit = async function (id) {
+    if (!live) { var d = demo(); d.outfits = (d.outfits || []).filter(function (x) { return x.id !== id; }); W('sutairu-demo-data', d); return; }
+    ck(await sb.from('outfits').delete().eq('id', id));
+  };
   // Holds made while logged out (saved in this browser) move into the first closet at login.
   S.migrate = async function () {
     var ids = L('sutairu-holds', []); if (!ids.length) return;

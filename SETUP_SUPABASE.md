@@ -9,3 +9,4 @@ Until you do this, the site runs in **demo mode**: it works, but memberships and
 5. Open `config.js` in the site folder and paste them between the quotes. Never paste the `service_role` or secret key.
 6. Open `join.html`, open a membership, then check Supabase, **Table Editor**, `closets`: you should see a row called "On hold".
 7. Before launch: **Authentication**, **URL Configuration**, set the Site URL to your real website address.
+8. Saved fitting-room looks: if you already ran `supabase_setup.sql` before Cluster 6, also run `supabase_add_outfits.sql` the same way (SQL Editor, New query, Run). Fresh projects only need `supabase_setup.sql`.
