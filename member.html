@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Member | Sutairu</title>
+<meta name="description" content="A Sutairu member and the looks they have shared.">
+<meta name="theme-color" content="#F3EBDD">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Sutairu"><meta property="og:title" content="Member | Sutairu"><meta property="og:description" content="A Sutairu member and the looks they have shared."><meta property="og:image" content="https://YOUR-SITE-URL/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sutairu.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="index.html">Sutairu</a>
+    <div class="links"><a href="shop.html">Shop floor</a><a href="community.html">Community</a><a href="fitting-room.html">Fitting room</a><a href="wardrobe.html">Wardrobe</a></div>
+    <button class="icon-btn" id="theme" aria-label="Switch between day and evening shop">☾</button>
+  </nav>
+  <main class="section" style="padding-top:20px">
+    <div class="stitch" id="nf" hidden style="max-width:420px"><h2>Member not found</h2><p>We couldn’t find that member. They may have left the shop.</p><p style="margin-top:14px"><a class="btn" href="community.html">Back to the community</a></p></div>
+    <div id="box" hidden>
+      <h1 id="nm"></h1>
+      <p class="hand" id="fc"></p>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="fb" hidden aria-pressed="false">Follow</button>
+        <a class="btn" id="jb" href="join.html" hidden>Open a membership to follow</a>
+        <p class="hand" id="you" hidden>This is your public page. Only looks that were approved appear here.</p>
+      </div>
+      <p class="hand" id="msg" role="status" aria-live="polite"></p>
+      <div class="feed" id="feed"></div>
+      <div class="stitch" id="empty" hidden style="margin-top:26px;max-width:420px"><h3>Nothing on the shelf yet</h3><p>No approved looks from this member so far.</p></div>
+    </div>
+  </main>
+  <footer class="foot">
+    <p class="logo" style="margin:0">Sutairu</p>
+    <p class="hand">Your closet, but dreamier.</p>
+    <p style="font-size:.8rem;color:var(--muted)"><a href="guidelines.html">Community guidelines</a></p>
+  </footer>
+</div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="store.js"></script>
+<script src="report.js"></script>
+<script src="cards.js"></script>
+<script>
+var $ = function (s) { return document.querySelector(s); };
+var uid = new URLSearchParams(location.search).get('u') || '', count = 0, following = false;
+function label() {
+  $('#fc').textContent = count + (count === 1 ? ' follower' : ' followers');
+  $('#fb').textContent = following ? 'Following' : 'Follow'; $('#fb').setAttribute('aria-pressed', following);
+}
+(async function () {
+  try {
+    var me = await Store.user(), prof = await Store.profile(uid), looks = uid ? await Store.memberLooks(uid) : [];
+    var name = prof ? prof.name : looks[0] ? looks[0].author : null;
+    if (!name) { $('#nf').hidden = false; return; }
+    $('#box').hidden = false; $('#nm').textContent = name; document.title = name + ' | Sutairu';
+    $('#feed').innerHTML = looks.map(Cards.card).join(''); $('#empty').hidden = looks.length > 0;
+    count = await Store.followerCount(uid);
+    if (!me) $('#jb').hidden = false;
+    else if (me.id === uid) $('#you').hidden = false;
+    else { following = (await Store.follows()).indexOf(uid) > -1; $('#fb').hidden = false; }
+    label();
+  } catch (e) { console.error(e); $('#nf').hidden = false; }
+})();
+$('#fb').onclick = async function () {
+  var b = this; b.disabled = true;
+  try {
+    if (following) { await Store.unfollow(uid); following = false; count = Math.max(0, count - 1); $('#msg').textContent = 'You unfollowed them.'; }
+    else { await Store.follow(uid); following = true; count += 1; $('#msg').textContent = 'You’re following them. Their looks will show under “People I follow”.'; }
+    label();
+  } catch (e) { $('#msg').textContent = 'Tangled thread. Try again?'; }
+  b.disabled = false;
+};
+</script>
+</body>
+</html>

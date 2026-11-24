@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Share a look | Sutairu</title>
+<meta name="description" content="Share your own look with the Sutairu community.">
+<meta name="theme-color" content="#F3EBDD">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Sutairu"><meta property="og:title" content="Share a look | Sutairu"><meta property="og:description" content="Share your own look with the Sutairu community."><meta property="og:image" content="https://YOUR-SITE-URL/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sutairu.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="index.html">Sutairu</a>
+    <div class="links"><a href="shop.html">Shop floor</a><a href="community.html">Community</a><a href="fitting-room.html">Fitting room</a><a href="wardrobe.html">Wardrobe</a></div>
+    <button class="icon-btn" id="theme" aria-label="Switch between day and evening shop">☾</button>
+  </nav>
+  <main class="section" style="padding-top:20px;display:grid;gap:20px;justify-items:start">
+    <h1>Share a look</h1>
+    <p class="hand">Every look is checked by a person before it goes on the shelf.</p>
+    <div class="stitch" id="guest" hidden style="max-width:420px"><h3>Open a membership first</h3><p>Members can share their own looks with the shop.</p><p style="margin-top:14px"><a class="btn" href="join.html">Open a membership</a></p></div>
+    <form id="f" class="form stitch" hidden style="max-width:520px">
+      <label>Photo<input class="field" id="file" type="file" accept="image/jpeg,image/png,image/webp" required></label>
+      <img id="pv" hidden alt="Preview of your photo" style="max-width:200px;border-radius:6px">
+      <label>Title<input class="field" id="title" maxlength="60" required></label>
+      <label>Mood<select class="field" id="mood" required></select></label>
+      <label>Season<select class="field" id="season" required></select></label>
+      <label>Tags (up to 6, separated by commas)<input class="field" id="tags" placeholder="blazer, cream trousers, brunch"></label>
+      <label class="check"><input type="checkbox" id="own" required><span>I took this photo, or I have permission to share it.</span></label>
+      <label class="check"><input type="checkbox" id="rules" required><span>I’ve read the <a href="guidelines.html">community guidelines</a>.</span></label>
+      <p class="fine">Please don’t share photos of children or private details like addresses, chats or number plates. We remove location data from your photo.</p>
+      <button class="btn" id="go" type="submit">Send for review</button>
+      <p class="hand" id="msg" role="status" aria-live="polite"></p>
+    </form>
+    <section id="minebox" hidden style="width:100%;max-width:620px"><h2>Your submissions</h2><div id="mine"></div></section>
+  </main>
+  <footer class="foot">
+    <p class="logo" style="margin:0">Sutairu</p>
+    <p class="hand">Your closet, but dreamier.</p>
+    <p style="font-size:.8rem;color:var(--muted)"><a href="guidelines.html">Community guidelines</a></p>
+  </footer>
+</div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="store.js"></script>
+<script>
+var $ = function (s) { return document.querySelector(s); }, esc = Store.esc;
+var MOODS = ['cozy', 'sharp', 'elegant', 'minimal', 'moody', 'street', 'soft', 'casual', 'playful', 'dreamy', 'vintage', 'bold', 'breezy', 'cool', 'dramatic'];
+var SEASONS = ['spring', 'summer', 'autumn', 'winter', 'all-season'];
+function opts(a) { return '<option value="">Choose…</option>' + a.map(function (x) { return '<option value="' + x + '">' + x.charAt(0).toUpperCase() + x.slice(1) + '</option>'; }).join(''); }
+$('#mood').innerHTML = opts(MOODS); $('#season').innerHTML = opts(SEASONS);
+
+// Shrink and re-encode the photo in the browser. This also removes location data (EXIF).
+async function prep(file) {
+  if (['image/jpeg', 'image/png', 'image/webp'].indexOf(file.type) < 0) throw new Error('Please choose a JPG, PNG or WebP photo.');
+  if (file.size > 12 * 1048576) throw new Error('That photo is over 12 MB. Please choose a smaller one.');
+  var bmp; try { bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch (e) { throw new Error('We couldn’t read that photo. Try another one.'); }
+  if (Math.max(bmp.width, bmp.height) < 400) throw new Error('That photo is too small. Please use one at least 400 pixels wide.');
+  var k = Math.min(1, 1200 / Math.max(bmp.width, bmp.height)), w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
+  var c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(bmp, 0, 0, w, h);
+  var q = .82, blob;
+  for (var i = 0; i < 4; i++) {
+    blob = await new Promise(function (r) { c.toBlob(r, 'image/webp', q); });
+    if (blob && blob.size <= 800 * 1024) break; q -= .1;
+  }
+  if (!blob || blob.size > 800 * 1024) throw new Error('That photo is still too large after shrinking. Please try another.');
+  var url = await new Promise(function (r) { var fr = new FileReader(); fr.onload = function () { r(fr.result); }; fr.readAsDataURL(blob); });
+  return { blob: blob, w: w, h: h, url: url };
+}
+var STATUS = { pending: 'Waiting for review', approved: 'On the community shelf', rejected: 'Not approved' };
+async function mine() {
+  var list = await Store.myLooks();
+  $('#mine').innerHTML = list.length ? list.map(function (l) {
+    return '<div class="mine-row"><img src="' + esc(l.url) + '" alt="" style="width:64px;aspect-ratio:3/4;object-fit:cover;border-radius:4px"><div style="flex:1"><h3>' + esc(l.title) + '</h3>' +
+      '<p class="hand">' + STATUS[l.status] + (l.status === 'rejected' && l.note ? ': ' + esc(l.note) : '') + '</p></div>' +
+      '<button class="btn btn--ghost" data-del="' + esc(l.id) + '">Remove</button></div>';
+  }).join('') : '<p class="fine">Nothing shared yet.</p>';
+}
+$('#file').onchange = function () {
+  var f = this.files[0], pv = $('#pv'); pv.hidden = !f; if (f) pv.src = URL.createObjectURL(f);
+};
+$('#f').onsubmit = async function (e) {
+  e.preventDefault(); var go = $('#go'), msg = $('#msg'); go.disabled = true; msg.textContent = 'One moment…';
+  try {
+    var p = await prep($('#file').files[0]);
+    var tags = $('#tags').value.split(',').map(function (t) { return t.trim().toLowerCase().slice(0, 20); }).filter(Boolean).slice(0, 6);
+    await Store.submitLook({ title: $('#title').value.trim(), tags: tags, mood: $('#mood').value, season: $('#season').value, width: p.w, height: p.h }, p.blob, p.url);
+    msg.textContent = 'Sent. It will appear on the shelf once it’s been checked.';
+    $('#f').reset(); $('#pv').hidden = true; await mine();
+  } catch (err) { msg.textContent = (err && err.message) || 'Tangled thread. Try again?'; }
+  finally { go.disabled = false; }
+};
+document.addEventListener('click', async function (e) {
+  var b = e.target.closest('[data-del]'); if (!b || !confirm('Remove this look?')) return;
+  try { await Store.deleteLook(b.dataset.del); await mine(); } catch (err) { alert('Tangled thread. Try again?'); }
+});
+Store.user().then(function (u) {
+  if (!u) { $('#guest').hidden = false; return; }
+  $('#f').hidden = false; $('#minebox').hidden = false; return mine();
+}).catch(function (e) { console.error(e); });
+</script>
+</body>
+</html>

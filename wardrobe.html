@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Your wardrobe | Sutairu</title>
+<meta name="description" content="Your Sutairu wardrobe.">
+<meta name="theme-color" content="#F3EBDD">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="sutairu.css">
@@ -12,7 +16,7 @@
 <div class="wrap">
   <nav class="nav" aria-label="Main">
     <a class="logo" href="index.html">Sutairu</a>
-    <div class="links"><a href="shop.html">Shop floor</a><a href="fitting-room.html">Fitting room</a><a href="wardrobe.html" aria-current="page" style="color:var(--accent)">Wardrobe</a></div>
+    <div class="links"><a href="shop.html">Shop floor</a><a href="community.html">Community</a><a href="fitting-room.html">Fitting room</a><a href="wardrobe.html" aria-current="page" style="color:var(--accent)">Wardrobe</a></div>
     <button class="icon-btn" id="theme" aria-label="Switch between day and evening shop">☾</button>
   </nav>
   <main class="section" style="padding-top:20px">
@@ -24,7 +28,7 @@
       <p class="hand" id="demo" hidden>Demo mode: saved in this browser only. Add your Supabase keys to config.js for real accounts.</p>
       <form id="newc" class="row"><input class="field" id="cn" style="max-width:260px" maxlength="40" placeholder="Name a new closet" aria-label="New closet name" required><button class="btn" type="submit">Add closet</button></form>
       <div class="closet-grid" id="closets"></div>
-      <div class="row"><a class="btn" href="shop.html">Back to the shop floor</a><button class="btn btn--ghost" id="out">Log out</button></div>
+      <div class="row"><a class="btn" href="shop.html">Back to the shop floor</a><a class="btn btn--ghost" href="upload.html">Share a look</a><a class="btn btn--ghost" id="pub" href="member.html">My public page</a><a class="btn btn--ghost" href="community.html?tab=following">People I follow</a><a class="btn btn--ghost" id="modlink" href="moderate.html" hidden>Review room</a><button class="btn btn--ghost" id="out">Log out</button></div>
     </div>
   </main>
 </div>
@@ -54,9 +58,10 @@ async function draw() {
 }
 Store.user().then(function (u) {
   if (!u) { $('#guest').hidden = false; return; }
-  U = u; $('#me').hidden = false; $('#me').style.display = 'grid';
+  U = u; $('#pub').href = 'member.html?u=' + encodeURIComponent(u.id); $('#me').hidden = false; $('#me').style.display = 'grid';
   $('#mname').textContent = u.name; $('#memail').textContent = u.email;
   $('#msince').textContent = 'Member since ' + new Date(u.since).getFullYear();
+  Store.isModerator().then(function (m) { if (m) $('#modlink').hidden = false; });
   return draw();
 }).catch(function (e) { console.error(e); $('#stats').textContent = 'Tangled thread. Refresh to try again?'; });
 document.addEventListener('click', async function (e) {

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>From the community | Sutairu</title>
+<meta name="description" content="Looks shared by members of the Sutairu community, checked by a person before they appear.">
+<meta name="theme-color" content="#F3EBDD">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Sutairu"><meta property="og:title" content="From the community | Sutairu"><meta property="og:description" content="Looks shared by members of the Sutairu community, checked by a person before they appear."><meta property="og:image" content="https://YOUR-SITE-URL/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sutairu.css">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="index.html">Sutairu</a>
+    <div class="links"><a href="shop.html">Shop floor</a><a href="community.html" aria-current="page" style="color:var(--accent)">Community</a><a href="fitting-room.html">Fitting room</a><a href="wardrobe.html">Wardrobe</a></div>
+    <button class="icon-btn" id="theme" aria-label="Switch between day and evening shop">☾</button>
+    <a class="btn" id="me" href="join.html">Join</a>
+  </nav>
+  <main class="section" style="padding-top:20px">
+    <h1>From the community</h1>
+    <p class="hand">Looks shared by members. Every one is checked before it appears.</p>
+    <div class="row" style="margin-top:14px"><a class="btn" href="upload.html">Share a look</a><a class="btn btn--ghost" href="guidelines.html">Community guidelines</a></div>
+    <div class="chips" id="tabs" role="group" aria-label="Which looks" style="margin-top:16px"><button class="chip" data-tab="all" aria-pressed="true">Everyone</button><button class="chip" data-tab="following" aria-pressed="false" hidden>People I follow</button></div>
+    <p class="hand" id="err" hidden>Tangled thread. Refresh to try again?</p>
+    <div class="feed" id="feed"></div>
+    <div class="stitch" id="empty" hidden style="margin-top:26px;max-width:420px"><h3>The shelf is waiting</h3><p>Nothing here yet. Be the first to share a look.</p></div>
+  </main>
+  <footer class="foot">
+    <p class="logo" style="margin:0">Sutairu</p>
+    <p class="hand">Your closet, but dreamier.</p>
+    <p style="font-size:.8rem;color:var(--muted)"><a href="guidelines.html">Community guidelines</a></p>
+  </footer>
+</div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="store.js"></script>
+<script src="report.js"></script>
+<script src="cards.js"></script>
+<script>
+var $ = function (s) { return document.querySelector(s); }, tab = 'all';
+var EMPTY = { all: ['The shelf is waiting', 'Nothing here yet. Be the first to share a look.'], following: ['Nobody here yet', 'Follow members from their profile and their looks will show up here.'] };
+async function load() {
+  $('#err').hidden = true;
+  try {
+    var list = tab === 'following' ? await Store.followingLooks() : await Store.communityLooks();
+    $('#feed').innerHTML = list.map(Cards.card).join('');
+    $('#empty h3').textContent = EMPTY[tab][0]; $('#empty p').textContent = EMPTY[tab][1]; $('#empty').hidden = list.length > 0;
+  } catch (e) { console.error(e); $('#err').hidden = false; }
+}
+function setTab(t) {
+  tab = t; document.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.tab === t); }); load();
+}
+document.querySelectorAll('[data-tab]').forEach(function (b) { b.onclick = function () { setTab(b.dataset.tab); }; });
+Store.user().then(function (u) {
+  if (!u) return;
+  $('#me').textContent = 'Wardrobe'; $('#me').href = 'wardrobe.html'; document.querySelector('[data-tab="following"]').hidden = false;
+  if (new URLSearchParams(location.search).get('tab') === 'following') setTab('following');
+});
+load();
+</script>
+</body>
+</html>

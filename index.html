@@ -4,15 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sutairu: your closet, but dreamier</title>
+<meta name="description" content="Sutairu is a little fashion boutique on the internet. Browse looks, put favourites on hold, and try them together in the fitting room.">
+<meta name="theme-color" content="#F3EBDD">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Sutairu"><meta property="og:title" content="Sutairu: your closet, but dreamier"><meta property="og:description" content="Sutairu is a little fashion boutique on the internet. Browse looks, put favourites on hold, and try them together in the fitting room."><meta property="og:image" content="https://YOUR-SITE-URL/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="sutairu.css">
+<script>try{if(sessionStorage.getItem("sutairu-opened"))document.documentElement.classList.add("seen");else sessionStorage.setItem("sutairu-opened","1")}catch(e){}</script>
 </head>
-<body>
+<body class="home">
 <div class="wrap">
   <nav class="nav" aria-label="Main">
     <a class="logo" href="index.html">Sutairu</a>
-    <div class="links"><a href="shop.html">Shop floor</a><a href="fitting-room.html">Fitting room</a><a href="wardrobe.html">Wardrobe</a></div>
+    <div class="links"><a href="shop.html">Shop floor</a><a href="community.html">Community</a><a href="fitting-room.html">Fitting room</a><a href="wardrobe.html">Wardrobe</a></div>
     <button class="icon-btn" id="theme" aria-label="Switch between day and evening shop">☾</button>
     <a class="btn" href="join.html">Join</a>
   </nav>
@@ -34,7 +39,7 @@
     <div class="intro">
       <h1>Your closet, but dreamier.</h1>
       <p>Walk the racks, put your favourite looks on hold, and try them together in the fitting room.</p>
-      <div class="row"><a class="btn" href="shop.html">Step inside</a><a class="btn btn--ghost" href="#fitting">How it works</a></div>
+      <div class="row"><a class="btn" href="shop.html">Step inside</a><a class="btn btn--ghost" href="#fitting">How it works</a><button class="bell" id="bell" aria-label="Ring the shop bell"><svg viewBox="0 0 40 52" aria-hidden="true"><line x1="20" y1="0" x2="20" y2="11" stroke="#A67C52" stroke-width="2"/><path d="M10 36Q10 14 20 14Q30 14 30 36L34 41H6Z" fill="#F2C879" stroke="#C9A24A" stroke-width="1.5" stroke-linejoin="round"/><circle cx="20" cy="45" r="3.4" fill="#C9A24A"/></svg></button></div>
     </div>
   </header>
 
@@ -78,6 +83,7 @@
   <footer class="foot">
     <p class="logo" style="margin:0">Sutairu</p>
     <p class="hand">Your closet, but dreamier.</p>
+    <p style="font-size:.8rem;color:var(--muted)"><a href="guidelines.html">Community guidelines</a></p>
     <p style="font-size:.8rem;color:var(--muted)">A student portfolio project. Photos are placeholders from Pinterest and will be replaced before launch.</p>
   </footer>
 </div>
@@ -87,6 +93,10 @@ try{var t=localStorage.getItem('sutairu-theme');if(t)root.setAttribute('data-the
 tb.onclick=function(){var dark=getComputedStyle(root).getPropertyValue('--bg').trim()==='#2A1418';var n=dark?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('sutairu-theme',n)}catch(e){}};
 document.querySelectorAll('.chip').forEach(function(c){c.onclick=function(){document.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed',x===c)});var f=c.dataset.f;document.querySelectorAll('.look').forEach(function(l){l.hidden=f!=='all'&&l.dataset.s!==f})}});
 document.querySelectorAll('.hold').forEach(function(b){b.onclick=function(){var on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);b.textContent=on?'On hold for you':'Put it on hold'}});
+var bell=document.getElementById('bell');
+function ring(){bell.classList.remove('ring');void bell.offsetWidth;bell.classList.add('ring')}
+bell.onclick=ring;setTimeout(ring,700);
+var hr=new Date().getHours();document.querySelector('.sign').textContent=(hr>=9&&hr<22)?'Open':'Back soon';
 </script>
 </body>
 </html>

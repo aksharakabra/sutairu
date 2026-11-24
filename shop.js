@@ -112,14 +112,16 @@
       '<div class="row"><button class="btn" data-hold="' + c.id + '" aria-pressed="' + on + '">' + label(on) + '</button>' +
       '<a class="btn btn--ghost" href="fitting-room.html?add=' + c.id + '">Try in the fitting room</a></div>' + shopBox(c) +
       (more.length ? '<div><p class="hand">More from this rack</p><div class="more">' + more.map(function (x) { return '<button data-go="' + x.id + '" aria-label="' + x.title + '"><img src="' + src(x, 'thumb') + '" alt=""></button>'; }).join('') + '</div></div>' : '') +
-      '<div class="row"><button class="btn btn--ghost" data-step="-1">‹ Previous</button><button class="btn btn--ghost" data-step="1">Next ›</button></div></div></div>';
+      '<div class="row"><button class="btn btn--ghost" data-step="-1">‹ Previous</button><button class="btn btn--ghost" data-step="1">Next ›</button></div>' +
+      '<button class="linklike" data-report="cat:' + c.id + '" data-t="' + Store.esc(c.title) + '">Report this look</button></div></div>';
     if (!dlg.open) dlg.showModal();
   }
   function indexOf(id) { return cur.findIndex(function (c) { return c.id === id; }); }
 
   document.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
-    if (b.dataset.hold) toggle(b.dataset.hold);
+    if (b.dataset.report) Report.open(b.dataset.report, b.dataset.t);
+    else if (b.dataset.hold) toggle(b.dataset.hold);
     else if (b.classList.contains('open')) show(indexOf(b.dataset.id));
     else if (b.dataset.go) show(indexOf(b.dataset.go));
     else if (b.dataset.step) show(idx + Number(b.dataset.step));

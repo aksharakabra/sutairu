@@ -2,7 +2,7 @@
   var $ = function (s) { return document.querySelector(s); };
   var D = window.CATALOG, IM = window.IMGS || {}, byId = {}, MAX = 12;
   D.forEach(function (c) { byId[c.id] = c; });
-  function src(c, k) { return IM[c.id] || 'images/' + c[k]; }
+  function src(c, k) { return c.url || IM[c.id] || 'images/' + c[k]; }
   function rid() { return Math.random().toString(36).slice(2, 9); }
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function say(m) { $('#msg').textContent = m; }
@@ -98,11 +98,17 @@
   $('#new').onclick = function () { items = []; sel = null; oid = null; $('#name').value = 'Untitled look'; sync(); say('A fresh board.'); };
 
   /* ---- the closet rack ---- */
-  var cl = [], hs = [];
+  var cl = [], hs = [], comList = [];
+  function loadCommunity() {
+    return Store.communityLooks().then(function (list) {
+      comList = list.map(function (l) { byId['com:' + l.id] = { id: 'com:' + l.id, title: l.title, width: l.width, height: l.height, url: l.url, tags: [], colours: [] }; return 'com:' + l.id; });
+    }).catch(function () {});
+  }
   function idsFor(v) {
     var seen = {}, out = [];
     function push(id) { if (!seen[id]) { seen[id] = 1; out.push(id); } }
     if (v === '__all') D.forEach(function (c) { push(c.id); });
+    else if (v === '__com') comList.forEach(push);
     else if (v === '__local') { try { JSON.parse(localStorage.getItem('sutairu-holds') || '[]').forEach(push); } catch (e) {} }
     else hs.forEach(function (h) { if (h.closet_id === v) push(h.look_id); });
     return out.filter(function (id) { return byId[id]; });
@@ -121,6 +127,7 @@
     if (user) cl.forEach(function (c) { o.push([c.id, c.name, idsFor(c.id).length]); });
     else { var n = idsFor('__local').length; if (n) o.push(['__local', 'On hold (this browser)', n]); }
     var first = o.filter(function (x) { return x[2] > 0; })[0];
+    if (comList.length) o.push(['__com', 'Community shelf', comList.length]);
     o.push(['__all', 'The whole shop', D.length]);
     $('#src').innerHTML = o.map(function (x) { return '<option value="' + x[0] + '">' + Store.esc(x[1]) + ' (' + x[2] + ')</option>'; }).join('');
     $('#src').value = first ? first[0] : '__all'; rack();
@@ -166,7 +173,7 @@
     x.fillStyle = '#FBF6EA'; x.fillRect(0, 0, W, H);
     try {
       var imgs = await Promise.all(items.map(function (it) {
-        return new Promise(function (res, rej) { var im = new Image(); im.onload = function () { res(im); }; im.onerror = rej; im.src = src(byId[it.id], 'full'); });
+        return new Promise(function (res, rej) { var im = new Image(); im.onload = function () { res(im); }; im.onerror = rej; im.crossOrigin = 'anonymous'; im.src = src(byId[it.id], 'full'); });
       }));
       items.forEach(function (it, i) {
         var im = imgs[i], w = it.w * W, h = w * im.naturalHeight / im.naturalWidth, b = w * .014;
@@ -191,7 +198,10 @@
   /* ---- start ---- */
   options();
   var want = new URLSearchParams(location.search).get('add');
-  if (want && byId[want]) { add(want); try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+  loadCommunity().then(function () {
+    options();
+    if (want && byId[want]) { add(want); try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+  });
   Store.user().then(function (u) {
     if (!u) return;
     user = u; var me = $('#me'); me.textContent = 'Wardrobe'; me.href = 'wardrobe.html';
