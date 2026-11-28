@@ -76,7 +76,7 @@
     ck(await sb.from('holds').delete().eq('closet_id', closetId).eq('look_id', lookId));
   };
   /* ---- community: shared looks, review, reports ---- */
-  var MAXPEND = 5, COLS = 'id,user_id,author_name,title,tags,mood,season,image_path,width,height,status,review_note,created_at';
+  var COLS = 'id,user_id,author_name,title,tags,mood,season,image_path,width,height,status,review_note,created_at';
   function norm(r) {
     return { id: r.id, uid: r.user_id, title: r.title, tags: r.tags || [], mood: r.mood, season: r.season, author: r.author_name, width: r.width, height: r.height,
       status: r.status, note: r.review_note || '', created: r.created_at, url: sb.storage.from('looks').getPublicUrl(r.image_path).data.publicUrl };
@@ -105,21 +105,15 @@
     var u = await S.user();
     return ck(await sb.from('community_looks').select(COLS).eq('user_id', u.id).order('created_at', { ascending: false })).map(norm);
   };
-  S.pendingLooks = async function () {
-    if (!live) return mine().filter(function (l) { return l.status === 'pending'; });
-    return ck(await sb.from('community_looks').select(COLS).eq('status', 'pending').order('created_at')).map(norm);
-  };
   S.looksByIds = async function (ids) {
     if (!live) return allLooks().filter(function (l) { return ids.indexOf(l.id) > -1; });
     return ck(await sb.from('community_looks').select(COLS).in('id', ids)).map(norm);
   };
   S.submitLook = async function (m, blob, dataUrl) {
     var u = await S.user(); if (!u) throw new Error('Open a membership first.');
-    var waiting = (await S.myLooks()).filter(function (l) { return l.status === 'pending'; }).length;
-    if (waiting >= MAXPEND) throw new Error('You already have ' + MAXPEND + ' looks waiting for review. Please wait for those first.');
     if (!live) {
       var d = demo(); d.looks = d.looks || [];
-      var row = { id: rid(), uid: 'demo', title: m.title, tags: m.tags, mood: m.mood, season: m.season, author: u.name, width: m.width, height: m.height, status: 'pending', note: '', created: new Date().toISOString(), url: dataUrl };
+      var row = { id: rid(), uid: 'demo', title: m.title, tags: m.tags, mood: m.mood, season: m.season, author: u.name, width: m.width, height: m.height, status: 'approved', note: '', created: new Date().toISOString(), url: dataUrl };
       d.looks.push(row);
       try { localStorage.setItem('sutairu-demo-data', JSON.stringify(d)); } catch (e) { throw new Error('This browser’s storage is full. Remove a look first.'); }
       return row;

@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>From the community | Sutairu</title>
-<meta name="description" content="Looks shared by members of the Sutairu community, checked by a person before they appear.">
+<meta name="description" content="Looks shared by members of the Sutairu community, shared straight to the shelf.">
 <meta name="theme-color" content="#F3EBDD">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta property="og:type" content="website"><meta property="og:site_name" content="Sutairu"><meta property="og:title" content="From the community | Sutairu"><meta property="og:description" content="Looks shared by members of the Sutairu community, checked by a person before they appear."><meta property="og:image" content="https://YOUR-SITE-URL/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Sutairu"><meta property="og:title" content="From the community | Sutairu"><meta property="og:description" content="Looks shared by members of the Sutairu community, shared straight to the shelf."><meta property="og:image" content="https://YOUR-SITE-URL/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Fraunces:ital,wght@0,500;1,500&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="sutairu.css">
@@ -22,9 +22,10 @@
   </nav>
   <main class="section" style="padding-top:20px">
     <h1>From the community</h1>
-    <p class="hand">Looks shared by members. Every one is checked before it appears.</p>
+    <p class="hand">Looks shared by members. Shared straight to the shelf.</p>
     <div class="row" style="margin-top:14px"><a class="btn" href="upload.html">Share a look</a><a class="btn btn--ghost" href="guidelines.html">Community guidelines</a></div>
     <div class="chips" id="tabs" role="group" aria-label="Which looks" style="margin-top:16px"><button class="chip" data-tab="all" aria-pressed="true">Everyone</button><button class="chip" data-tab="following" aria-pressed="false" hidden>People I follow</button></div>
+    <p class="row" id="cl" hidden style="margin-top:12px;align-items:center"><span class="hand">Saving holds to</span><select class="field" id="closet" aria-label="Closet to save holds in"></select></p>
     <p class="hand" id="err" hidden>Tangled thread. Refresh to try again?</p>
     <div class="feed" id="feed"></div>
     <div class="stitch" id="empty" hidden style="margin-top:26px;max-width:420px"><h3>The shelf is waiting</h3><p>Nothing here yet. Be the first to share a look.</p></div>

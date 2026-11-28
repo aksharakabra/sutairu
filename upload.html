@@ -21,7 +21,7 @@
   </nav>
   <main class="section" style="padding-top:20px;display:grid;gap:20px;justify-items:start">
     <h1>Share a look</h1>
-    <p class="hand">Every look is checked by a person before it goes on the shelf.</p>
+    <p class="hand">Your look goes on the community shelf as soon as you share it.</p>
     <div class="stitch" id="guest" hidden style="max-width:420px"><h3>Open a membership first</h3><p>Members can share their own looks with the shop.</p><p style="margin-top:14px"><a class="btn" href="join.html">Open a membership</a></p></div>
     <form id="f" class="form stitch" hidden style="max-width:520px">
       <label>Photo<input class="field" id="file" type="file" accept="image/jpeg,image/png,image/webp" required></label>
@@ -33,10 +33,10 @@
       <label class="check"><input type="checkbox" id="own" required><span>I took this photo, or I have permission to share it.</span></label>
       <label class="check"><input type="checkbox" id="rules" required><span>I’ve read the <a href="guidelines.html">community guidelines</a>.</span></label>
       <p class="fine">Please don’t share photos of children or private details like addresses, chats or number plates. We remove location data from your photo.</p>
-      <button class="btn" id="go" type="submit">Send for review</button>
+      <button class="btn" id="go" type="submit">Share this look</button>
       <p class="hand" id="msg" role="status" aria-live="polite"></p>
     </form>
-    <section id="minebox" hidden style="width:100%;max-width:620px"><h2>Your submissions</h2><div id="mine"></div></section>
+    <section id="minebox" hidden style="width:100%;max-width:620px"><h2>Your shared looks</h2><div id="mine"></div></section>
   </main>
   <footer class="foot">
     <p class="logo" style="margin:0">Sutairu</p>
@@ -71,7 +71,7 @@ async function prep(file) {
   var url = await new Promise(function (r) { var fr = new FileReader(); fr.onload = function () { r(fr.result); }; fr.readAsDataURL(blob); });
   return { blob: blob, w: w, h: h, url: url };
 }
-var STATUS = { pending: 'Waiting for review', approved: 'On the community shelf', rejected: 'Not approved' };
+var STATUS = { approved: 'On the community shelf', rejected: 'Removed' };
 async function mine() {
   var list = await Store.myLooks();
   $('#mine').innerHTML = list.length ? list.map(function (l) {
@@ -89,7 +89,7 @@ $('#f').onsubmit = async function (e) {
     var p = await prep($('#file').files[0]);
     var tags = $('#tags').value.split(',').map(function (t) { return t.trim().toLowerCase().slice(0, 20); }).filter(Boolean).slice(0, 6);
     await Store.submitLook({ title: $('#title').value.trim(), tags: tags, mood: $('#mood').value, season: $('#season').value, width: p.w, height: p.h }, p.blob, p.url);
-    msg.textContent = 'Sent. It will appear on the shelf once it’s been checked.';
+    msg.textContent = 'Shared. It’s on the community shelf now.';
     $('#f').reset(); $('#pv').hidden = true; await mine();
   } catch (err) { msg.textContent = (err && err.message) || 'Tangled thread. Try again?'; }
   finally { go.disabled = false; }

@@ -24,7 +24,6 @@
     <div class="stitch" id="guest" hidden style="max-width:420px"><h3>Staff only</h3><p>Please log in to continue.</p><p style="margin-top:14px"><a class="btn" href="join.html">Log in</a></p></div>
     <div class="stitch" id="no" hidden style="max-width:420px"><h3>Staff only</h3><p>This room is for the people who look after the shop.</p></div>
     <div id="room" hidden style="width:100%;max-width:700px;display:none;gap:26px">
-      <section><h2>Waiting for review</h2><div id="pend"></div></section>
       <section><h2>Open reports</h2><div id="reps"></div></section>
     </div>
   </main>
@@ -36,19 +35,12 @@
 <script>
 var $ = function (s) { return document.querySelector(s); }, esc = Store.esc, byCat = {};
 CATALOG.forEach(function (c) { byCat[c.id] = c; });
-var WHY = ['Not about fashion', 'The photo isn’t yours, or permission is missing', 'Not allowed by the community guidelines', 'Photo quality is too low'];
 var RS = { inappropriate: 'Not safe or appropriate', copyright: 'Photo isn’t theirs, or no permission', harassment: 'Harassment or hate', spam: 'Spam or advertising', not_fashion: 'Not about fashion', other: 'Something else' };
 async function draw() {
-  var pend = await Store.pendingLooks(), reps = await Store.reports(), g = {};
+  var reps = await Store.reports(), g = {};
   reps.forEach(function (r) { (g[r.look_ref] = g[r.look_ref] || []).push(r); });
   var refs = Object.keys(g), ids = refs.filter(function (r) { return r.indexOf('com:') === 0; }).map(function (r) { return r.slice(4); });
   var looks = {}; (ids.length ? await Store.looksByIds(ids) : []).forEach(function (l) { looks[l.id] = l; });
-  $('#pend').innerHTML = pend.length ? pend.map(function (l) {
-    return '<div class="mine-row"><img src="' + esc(l.url) + '" alt="" style="width:110px;aspect-ratio:3/4;object-fit:cover;border-radius:6px"><div style="flex:1;display:grid;gap:8px">' +
-      '<h3>' + esc(l.title) + '</h3><p class="hand">by ' + esc(l.author) + ' · ' + esc(l.mood) + ', ' + esc(l.season) + '<br>' + esc(l.tags.join(', ')) + '</p>' +
-      '<select class="field" data-why="' + esc(l.id) + '" aria-label="Reason if rejecting">' + WHY.map(function (w) { return '<option>' + w + '</option>'; }).join('') + '</select>' +
-      '<div class="row"><button class="btn" data-ok="' + esc(l.id) + '">Approve</button><button class="btn btn--ghost" data-no="' + esc(l.id) + '">Reject</button></div></div></div>';
-  }).join('') : '<p>Nothing waiting. The shelf is up to date.</p>';
   $('#reps').innerHTML = refs.length ? refs.map(function (ref) {
     var isCom = ref.indexOf('com:') === 0, l = isCom ? looks[ref.slice(4)] : byCat[ref.slice(4)];
     var img = l ? (isCom ? l.url : 'images/' + l.thumb) : '', title = l ? l.title : '(this look no longer exists)';
@@ -68,9 +60,7 @@ Store.user().then(async function (u) {
 document.addEventListener('click', async function (e) {
   var b = e.target.closest('button'); if (!b) return;
   try {
-    if (b.dataset.ok) await Store.reviewLook(b.dataset.ok, 'approved', '');
-    else if (b.dataset.no) await Store.reviewLook(b.dataset.no, 'rejected', document.querySelector('[data-why="' + b.dataset.no + '"]').value);
-    else if (b.dataset.dis) await Store.resolveReports(b.dataset.dis);
+    if (b.dataset.dis) await Store.resolveReports(b.dataset.dis);
     else if (b.dataset.rem) { await Store.reviewLook(b.dataset.rem.slice(4), 'rejected', 'Removed after a report'); await Store.resolveReports(b.dataset.rem); }
     else return;
     await draw();

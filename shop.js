@@ -51,7 +51,7 @@
   function save() { try { localStorage.setItem('sutairu-holds', JSON.stringify(holds)); } catch (e) {} }
   function has(id) { return user ? all.some(function (x) { return x.closet_id === target && x.look_id === id; }) : holds.indexOf(id) > -1; }
   function count() { if (!user) return holds.length; var s = {}; all.forEach(function (x) { s[x.look_id] = 1; }); return Object.keys(s).length; }
-  function src(c, k) { return IM[c.id] || 'images/' + c[k]; }
+  function src(c, k) { return c.url || IM[c.id] || 'images/' + c[k]; }
   function alt(c) { return c.title + ', ' + c.tags.slice(0, 3).join(', '); }
   function label(on) { return on ? 'On hold for you' : 'Put it on hold'; }
 
@@ -67,7 +67,7 @@
   function render() {
     var ws = words(st.q);
     cur = items.filter(function (c) {
-      return (st.rack === 'All' || c.category === st.rack) && (!st.mood || c.mood === st.mood) &&
+      return (st.rack === 'All' || c.category === st.rack || (c.url && c.season && c.season.toLowerCase() === st.rack.toLowerCase())) && (!st.mood || c.mood === st.mood) &&
         (!st.who || c.styleFor === st.who || c.styleFor === 'any') &&
         (!st.col || c.colours.indexOf(st.col) > -1) && (!st.bud || BUD[c.id] === st.bud) &&
         !(st.clean && (c.sourceType === 'Screenshot' || c.sourceType === 'Collage')) &&
@@ -105,15 +105,15 @@
     var dots = c.colours.map(function (n) { return '<i style="background:' + HEX[n] + '" title="' + n + '"></i>'; }).join('');
     dlg.innerHTML = '<div class="stitch modal-in"><button class="icon-btn x" data-close aria-label="Close">×</button>' +
       '<div class="polaroid"><img src="' + src(c, 'full') + '" width="' + c.width + '" height="' + c.height + '" alt="' + alt(c) + '"><span>' + c.title + '</span></div>' +
-      '<div class="det"><p class="hand">' + c.category + '</p><h2 id="dt">' + c.title + '</h2>' +
+      '<div class="det"><p class="hand">' + c.category + '</p><h2 id="dt">' + c.title + '</h2>' + (c.author ? '<p class="hand">Shared by ' + c.author + '</p>' : '') +
       '<div class="chips">' + chips + '</div>' +
       '<div class="row" style="align-items:center"><span class="hand">Colours</span><span class="dots">' + dots + '</span></div>' +
       (BUD[c.id] ? '<p class="hand">Budget: ' + Store.esc(BUD[c.id]) + '</p>' : '') + (c.sourceType === 'Screenshot' ? '<p class="hand">This is a screenshot of someone else’s post. It’s a placeholder until it’s replaced.</p>' : '') +
       '<div class="row"><button class="btn" data-hold="' + c.id + '" aria-pressed="' + on + '">' + label(on) + '</button>' +
-      '<a class="btn btn--ghost" href="fitting-room.html?add=' + c.id + '">Try in the fitting room</a></div>' + shopBox(c) +
+      '<a class="btn btn--ghost" href="fitting-room.html?add=' + encodeURIComponent(c.id) + '">Try in the fitting room</a></div>' + shopBox(c) +
       (more.length ? '<div><p class="hand">More from this rack</p><div class="more">' + more.map(function (x) { return '<button data-go="' + x.id + '" aria-label="' + x.title + '"><img src="' + src(x, 'thumb') + '" alt=""></button>'; }).join('') + '</div></div>' : '') +
       '<div class="row"><button class="btn btn--ghost" data-step="-1">‹ Previous</button><button class="btn btn--ghost" data-step="1">Next ›</button></div>' +
-      '<button class="linklike" data-report="cat:' + c.id + '" data-t="' + Store.esc(c.title) + '">Report this look</button></div></div>';
+      '<button class="linklike" data-report="' + (c.url ? c.id : 'cat:' + c.id) + '" data-t="' + Store.esc(c.title) + '">Report this look</button></div></div>';
     if (!dlg.open) dlg.showModal();
   }
   function indexOf(id) { return cur.findIndex(function (c) { return c.id === id; }); }
@@ -151,8 +151,13 @@
     if (e.key === 'ArrowLeft') show(idx - 1);
   });
 
-  var moods = []; D.forEach(function (c) { if (moods.indexOf(c.mood) < 0) moods.push(c.mood); }); moods.sort();
-  $('#mood').innerHTML += moods.map(function (m) { return '<option value="' + m + '">' + m.charAt(0).toUpperCase() + m.slice(1) + '</option>'; }).join('');
+  function fillMoods() {
+    var moods = []; items.forEach(function (c) { if (c.mood && moods.indexOf(c.mood) < 0) moods.push(c.mood); }); moods.sort();
+    var keep = $('#mood').value;
+    $('#mood').innerHTML = '<option value="">Any mood</option>' + moods.map(function (m) { return '<option value="' + m + '">' + m.charAt(0).toUpperCase() + m.slice(1) + '</option>'; }).join('');
+    $('#mood').value = keep;
+  }
+  fillMoods();
   $('#mood').onchange = function () { st.mood = this.value; render(); };
   $('#who').onchange = function () { st.who = this.value; render(); };
   var tm; $('#q').oninput = function () { var v = this.value; clearTimeout(tm); tm = setTimeout(function () { st.q = v; render(); }, 120); };
@@ -174,6 +179,19 @@
     } else target = this.value;
     render(); ui();
   };
+
+  // Community looks (shared by members) join the shop floor. Text is escaped because members typed it.
+  function addCommunity(list) {
+    var e = Store.esc;
+    var com = list.map(function (l) {
+      var c = { id: 'com:' + l.id, title: e(l.title), category: 'Community', styleFor: 'any', mood: e(l.mood || ''), season: e(l.season || ''),
+        tags: (l.tags || []).map(e), colours: [], sourceType: 'Photo', width: l.width, height: l.height, url: e(l.url), author: e(l.author || '') };
+      c._t = tok([l.title, 'community', l.mood, l.season, 'unisex', (l.tags || []).join(' '), l.author || ''].join(' '));
+      return c;
+    });
+    items = com.concat(items.filter(function (c) { return !c.url; }));
+  }
+  Store.communityLooks().then(function (list) { addCommunity(list); fillMoods(); render(); ui(); }).catch(function (e) { console.error(e); });
 
   render(); ui();
   Store.user().then(function (u) {

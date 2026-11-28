@@ -43,13 +43,15 @@ if (Store.mode === 'demo') $('#demo').hidden = false;
 async function draw() {
   var cl = await Store.closets(), hs = await Store.holds(), seen = {};
   hs.forEach(function (h) { seen[h.look_id] = 1; });
+  var cids = Object.keys(seen).filter(function (k) { return k.indexOf('com:') === 0; }).map(function (k) { return k.slice(4); });
+  if (cids.length) { try { (await Store.looksByIds(cids)).forEach(function (l) { byId['com:' + l.id] = { id: 'com:' + l.id, title: l.title, url: l.url }; }); } catch (e) { console.error(e); } }
   var n = Object.keys(seen).length;
   $('#stats').textContent = n ? n + (n === 1 ? ' look' : ' looks') + ' on hold across ' + cl.length + (cl.length === 1 ? ' closet' : ' closets') : 'Nothing on hold yet. Go browse, I’ll hold the door.';
   $('#closets').innerHTML = cl.map(function (c) {
     var mine = hs.filter(function (h) { return h.closet_id === c.id; });
     var th = mine.map(function (h) {
       var l = byId[h.look_id]; if (!l) return '';
-      return '<div class="th"><img src="images/' + l.thumb + '" alt="' + l.title + '" title="' + l.title + '" loading="lazy"><button data-rm="' + c.id + '|' + h.look_id + '" aria-label="Remove ' + l.title + '">×</button></div>';
+      return '<div class="th"><img src="' + Store.esc(l.url || 'images/' + l.thumb) + '" alt="' + Store.esc(l.title) + '" title="' + Store.esc(l.title) + '" loading="lazy"><button data-rm="' + Store.esc(c.id + '|' + h.look_id) + '" aria-label="Remove ' + Store.esc(l.title) + '">×</button></div>';
     }).join('');
     return '<section class="stitch"><h3>' + Store.esc(c.name) + '</h3><p class="hand">' + mine.length + ' on hold</p>' +
       (th ? '<div class="thumbs">' + th + '</div>' : '<p style="margin:10px 0">This closet is feeling empty.</p>') +
