@@ -40,6 +40,14 @@
           <button class="btn btn--ghost" id="rm">Remove</button>
           <button class="btn btn--ghost" id="clr">Clear mirror</button>
         </div>
+        <div class="tools erase-tools" id="et" hidden aria-label="Eraser for the selected look">
+          <button class="btn btn--ghost" id="eraseBtn" aria-pressed="false">Eraser</button>
+          <button class="btn btn--ghost" id="autoBg">Remove plain background</button>
+          <label class="hand">Brush <input type="range" id="bsz" min="2" max="40" value="10"></label>
+          <label class="hand">Match <input type="range" id="tol" min="5" max="90" value="35"></label>
+          <button class="btn btn--ghost" id="undoE">Undo</button>
+          <button class="btn btn--ghost" id="restoreE">Restore original</button>
+        </div>
         <p class="fine" style="text-align:center;margin-top:10px">Drag a look to move it. Drag the round corner button to twist and stretch. With a look focused: arrow keys move, plus and minus resize, [ and ] twist, PageUp and PageDown change the layer, Delete removes.</p>
       </div>
 
